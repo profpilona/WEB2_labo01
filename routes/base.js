@@ -29,6 +29,10 @@ router.get('/aide', (requete, reponse) => {
 
 router.get('/index.html', (requete, reponse)=> {
     reponse.send('Vous etes dans la page index.html');
-})
+});
+
+router.get('*', (requete, reponse)=> {
+    reponse.send(`Erreur le point d'entrée n'est pas valide...`);
+});
 
 module.exports = router;

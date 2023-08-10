@@ -6,6 +6,10 @@
 ###
 GET http://127.0.0.1:8000/api/livres
 
+// route invalide...
+###
+GET http://127.0.0.1:8000/trucmachin
+
 // test de API pour récupérer tous les livres dont l'isbn est demandé
 ###
 GET http://127.0.0.1:8000/api/livres/isbn/9782896152254
@@ -36,15 +40,15 @@ POST http://127.0.0.1:8000/api/livres
 Content-type: application/json
 
 {
-    "_id": "9782896151177",
-    "titre": "Mon beau titre",
-    "auteur": "Moi",
-    "editeur": "Lui",
-    "nbPages": 33,
+    "_id": "21111896151177",
+    "titre": "21111Mon beau titre",
+    "auteur": "2111Moi",
+    "editeur": "2111Lui",
+    "nbPages": 1133,
     "langue": "français/french",
-    "prix": 99.95,
-    "resume": "Bonjour. voici un résumé",
-    "date": "2023-07-31"
+    "prix": 1199.95,
+    "resume": "11Bonjour. voici un résumé",
+    "date": "2023-08-10"
 }
 
 // test. de API PUT pour modifier un livre dans la BD
@@ -65,7 +69,7 @@ Content-type: application/json
 
 // test. de API DELETE pour supprimer un livre de la BD
 ###
-DELETE http://127.0.0.1:8000/api/livres/9782896151177
+DELETE http://127.0.0.1:8000/api/livres/21111896151177
 
 // test de API pour récupérer tous les users
 ###

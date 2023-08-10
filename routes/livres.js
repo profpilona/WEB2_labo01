@@ -7,18 +7,16 @@ const router = express.Router();
 const Livres = require('../modeles/Livres');
 
 router.get('/', (requete, reponse)=>{
-    Livres.getLivres((err, livres)=>{
-        if (err) throw err;
-        reponse.json(livres);
-    }, 250);
+    Livres.find({}).sort({date: -1}).limit(250).exec()
+        .then(livres=>reponse.json(livres))
+        .catch(err=>{throw err});
 });
 
 router.get('/isbn/:isbn', (requete, reponse)=>{
     let isbn = requete.params.isbn;
-    Livres.getLivresParISBN(isbn, (err, livres)=>{
-        if (err) throw err;
-        reponse.json(livres);
-    }, 25);
+    Livres.find({"_id": isbn}).exec()
+        .then(livres=>reponse.json(livres))
+        .catch(err=>{throw err});
 });
 
 router.get('/titre/:titre', (requete, reponse)=>{
@@ -45,12 +43,12 @@ router.get('/resume/:resume', (requete, reponse)=>{
 router.post('/', (requete, reponse)=>{
     let livre = requete.body;
     // console.log(livre);
-    Livres.ajoutLivre(livre, (err, msgRetour)=>{
-        if (err) throw err;
-        reponse.json(msgRetour);
-    });
+    Livres.create(livre)
+        .then(msgRetour=>reponse.json(msgRetour))
+        .catch(err=>{throw err});
 });
 router.put('/:isbn', (requete, reponse)=>{
+    // à compléter par les étudiants
     let isbn = requete.params.isbn;
     let nouveauLivre = requete.body;
     Livres.modifierLivre(isbn, nouveauLivre, (err, resultat)=>{
@@ -60,10 +58,9 @@ router.put('/:isbn', (requete, reponse)=>{
 });
 router.delete('/:isbn', (requete, reponse)=>{
     let isbn = requete.params.isbn;
-    console.log(isbn, 'a supprimer');
-    Livres.supprimerLivre(isbn, (err, resultat)=>{
-        if (err) throw err;
-        reponse.json(resultat);
-    });
+    //console.log(isbn, 'a supprimer');
+    Livres.deleteOne({"_id": isbn})
+        .then(resultat=>reponse.json(resultat))
+        .catch(err=>{throw err});
 });
 module.exports = router;

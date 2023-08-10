@@ -1,0 +1,25 @@
+{
+  "name": "labo01",
+  "version": "1.0.0",
+  "description": "par Alain Pilon\r date: 10 aout 2023",
+  "main": "labo01.js",
+  "scripts": {
+    "start": "node labo01",
+    "dev": "nodemon labo01"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://profpilona@github.com/profpilona/WEB2_labo01.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/profpilona/WEB2_labo01/issues"
+  },
+  "homepage": "https://github.com/profpilona/WEB2_labo01#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.4.2"
+  }
+}
