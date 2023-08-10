@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 
+        fichier pour tester mon API 
+        par Alain Pilon
+        10 aout 2023
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.23.0/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <style>
+        #entete {
+            border-bottom: 1px solid;
+            padding-left: 10px;
+        }
+        .col {
+            display: inline-block;
+            margin: 3px 0px;
+        }
+        .titre {
+            width: 40%;
+        }
+        .auteur {
+            width: 35%;
+        }
+        .nbPages {
+            width: 20%;
+        }
+        ul {
+            margin: 0px;
+            padding: 0px;
+        }
+        li {
+            display: block;
+            background-color: silver;
+            padding-left: 10px;
+            margin-top: 6px;
+        }
+        fieldset {
+            background-color: white;
+        }
+        .supprimer {
+            display: inline-block;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Page de test pour afficher les données du service Web</h1>
+    <p><button id="ajouter">Ajouter une discussion</button></p>
+    <div id="sectionAjout">
+        <p>ISBN: <input type="text" name="" id="ISBNAjout"></p>
+        <p>Titre: <input type="text" name="" id="titreAjout"></p>
+        <p>Auteur: <input type="text" name="" id="auteurAjout"></p>
+        <p><button id="confirmerAjout">Confirmer ajout</button></p>
+    </div>
+    <div id="patienter"><p>Patientez pendant l'opération....</p></div>
+    <div id="liste">
+        <div id="entete">
+            <p class="col titre">Titre</p>
+            <p class="col auteur">Auteur</p>
+            <p class="col nbPages">Nombre pages</p>
+        </div>
+        <div id="resultat">Patientez je récupère les données...</div>
+    </div>
+    <script>
+        // mécanisme #1: pour lire les données du service Web avec XMLHttpRequest
+
+        // const request = new XMLHttpRequest();
+        // request.open("GET", "/api/livres");
+        // request.send();
+        // request.onload = () => {
+        //     if (request.status === 200) {
+        //         let data = JSON.parse(request.response);
+        //         console.log(data);
+                // affichage dans la page Web des données
+        //     } else {
+        //         console.log('erreur:', request.status);
+        //     }
+        // };
+
+        // mécanisme #2: pour lire les données du service Web avec AXIOS
+
+        // est dans une librairie à part... un peu comme pour jquery
+        // axios.get('/api/livres')
+        // .then(reponse =>{
+        //     console.log(reponse.data);
+                // affichage dans la page Web des données
+        // }, err => {
+        //     console.log(err);
+        // });
+
+        // mécanisme #3: pour lire les données du service Web avec JQuery
+
+        // est dans la librairie JQuery...
+        // $(document).ready(function() {
+        //     $.ajax({
+        //         url: '/api/livres',
+        //         type: 'GET',
+        //         success: function(data) {
+        //             console.log(data);
+                // affichage dans la page Web des données
+        //         },
+        //         error: function(err) {
+        //             console.log(err);
+        //         }
+        //      });
+        // });
+
+        // mécanisme #4: pour lire les données du service Web 
+        // LE >>>>>> Fetch <<<<<<<  LE BON...
+        $(document).ready(function(){
+            $("#sectionAjout").hide();
+            $("#patienter").hide();
+            chargementDonnees();
+            $("#confirmerAjout").click(function() {
+                    // ici faire l'insertion c'est-à-dire le POST
+                    fairePost();
+            });
+            $("#ajouter").click(function(){
+                $("#sectionAjout").show();
+                $("#liste").hide();
+                $("#ajouter").hide();
+            });
+
+        }); 
+
+        function chargementDonnees() {
+            fetch('/api/livres', {method: "GET"})
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                // affichage dans la page Web des données
+                affichageDonnees(data);
+            });
+        }
+
+        function fairePost() {
+            console.log("debut insertion (du POST)...");
+            // ici mettre le POST au service Web
+            const url = '/api/livres';
+            // aller chercher les données sur le formulaire...
+            let donnees = {
+                "_id": $("#ISBNAjout").val(),
+                "titre": $("#titreAjout").val(),
+                "auteur": $("#auteurAjout").val(),
+                "editeur": "Lui",
+                "nbPages": 33,
+                "langue": "français/french",
+                "prix": 99.95,
+                "resume": "Bonjour. voici un résumé",
+                "date": "2023-07-31"
+            };
+            
+            $("#patienter").show();
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                },
+                body: JSON.stringify(donnees)
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                console.log("resultat du post", res);
+                // on remet la page dans son état initial
+                $("#patienter").hide();
+                $("#sectionAjout").hide();
+                $("#liste").show();
+                $("#ajouter").show(); 
+                chargementDonnees();
+            })
+            .catch(err=>console.log(err));
+        }
+
+        function affichageDonnees(data) {
+            const tousMESli = data.map(valeur=>construireLI(valeur));
+            
+            $("#resultat").html("<ul>"+tousMESli.join(" ")+"</ul>");
+            $(".inferieur").hide();
+            $(".superieur").click(function() {
+                $(".inferieur").hide();
+                $(this).find("div").show();
+            });
+        }
+        function construireLI(livre) {
+            let texte = `<li class="superieur">
+                <p class="col titre">${livre.titre}</p>
+                <p class="col auteur">${livre.auteur}</p>
+                <p class="col nbPages">${livre.nbPages}</p>
+                <div class="inferieur">
+                    <fieldset>
+                        <legend>Livre - ${livre.titre} - ${livre.auteur} 
+                            <button class="supprimer" onclick="supprimerLivre('${livre._id}')">Supprimer</button>
+                        </legend>
+                        <p>Éditeur: <strong>${livre.editeur}</strong></p>
+                        <p>${livre.resume}<p>
+
+                    </fieldset>
+                    <p>&nbsp;</p>
+                </div>
+                </li>
+                `;
+            return texte;
+        }
+        function supprimerLivre( isbn ) {
+            console.log("debut suppression (du DELETE)...");
+            let confirmation = confirm("Voulez-vous vraiment supprimer cette fiche");
+            if (!confirmation) 
+                return;  // oups annulation de l'usager on arrête la suppression  
+            // ici mettre le DELETE au service Web
+            const url = '/api/livres/'+isbn;
+            $("#patienter").show();
+            fetch(url, {
+                method: "DELETE"
+            })
+            .then(res=>res.json())
+            .then(res=>{
+                console.log("resultat du post", res);
+                // on remet la page dans son état initial
+                $("#patienter").hide();
+                $("#sectionAjout").hide();
+                $("#liste").show();
+                $("#ajouter").show(); 
+                chargementDonnees();
+            })
+            .catch(err=>console.log(err));            
+        }
+    </script>
+</body>
+</html>
